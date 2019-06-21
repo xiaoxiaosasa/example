@@ -1,2 +1,3 @@
 https://yq.aliyun.com/articles/619548?msgid=7752086
 https://www.processon.com/support  UML在线作图网站，可惜使用9次就得付费使用了
+https://www.runoob.com/html/html5-websocket.html     websocket，包含一个服务的安装
