@@ -1,1 +1,5 @@
 2019-7-26
+时间常用的格式（待总结完整）
+    表示当前时间
+    def now():
+        return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
