@@ -1,0 +1,61 @@
+# @optionLog.route('/optionLog/search',methods=['POST'])
+def optionLog_search(data,cond):
+    ip = cond['ip']
+    t=None
+    start_time=""
+    end_time=""
+    if cond.get('time'):
+        t = cond['time']
+        start_time = t[:19]
+        end_time = t[22:]
+        start_time=time.mktime((time.strptime(start_time, "%Y-%m-%d %H:%M:%S")))*1000
+        end_time=time.mktime((time.strptime(end_time, "%Y-%m-%d %H:%M:%S")))*1000
+    page = request.args.get('page', data["page"], type=int)
+    total=OptionLog.query.filter(OptionLog.clientIp.like("%" + ip + "%") if ip else text(""),
+                                 OptionLog.optionTime.between(start_time, end_time) if t else text("")).count()
+    # print(total)
+    logs = OptionLog.query.filter(OptionLog.clientIp.like("%"+ip+"%") if ip else text(""),
+                                  OptionLog.optionTime.between(start_time,end_time) if t else text(""))\
+                                    .limit(data['limit']).offset(( data["page"]-1)*data['limit']).all()
+    log_list=[]
+    rtn= {'code':0,'data':log_list}
+    pagination=Pagination(OptionLog.query,page,data['limit'],total,logs)
+    # pagination = entity.query.paginate(
+    #     page, per_page=data['limit'],
+    #     error_out=False)
+    if pagination:
+        items = pagination.items
+        for item in items:
+            log_list.append(dict(item))
+        rtn['data'] = log_list
+        rtn['count'] = pagination.total
+        rtn['prev'] = pagination.prev_num
+        rtn['next'] = pagination.next_num
+    else:
+        rtn['code'] = -1
+    return jsonify(rtn)
+    
+    
+    def search(data):
+    ip = data['cond']['ip']
+    t,start_time,end_time="","",""
+    if data['cond'].get('time'):
+        t = data['cond']['time']
+        start_time = time.mktime((time.strptime(t[:19], "%Y-%m-%d %H:%M:%S"))) * 1000
+        end_time = time.mktime((time.strptime(t[22:], "%Y-%m-%d %H:%M:%S"))) * 1000
+    page = request.args.get('page', data["page"], type=int)
+    log_list =[]
+    rtn = {'code': -1, 'data': log_list}
+    pagination = OptionLog.query.filter(OptionLog.clientIp.like("%" + ip + "%") if ip else "",
+                           OptionLog.optionTime.between(start_time, end_time) if t else "").paginate(page,data['limit'],error_out=False)
+    if pagination:
+        items = pagination.items
+        for item in items:
+            log_list.append(dict(item))
+        rtn['data'] = log_list
+        rtn['count'] = pagination.total
+        rtn['prev'] = pagination.prev_num
+        rtn['next'] = pagination.next_num
+        rtn['code'] = 0
+    return jsonify(rtn)
+    
