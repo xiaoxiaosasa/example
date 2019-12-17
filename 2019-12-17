@@ -1,0 +1,7 @@
+def getSaltSHA1(d):
+    '''
+     计算SHA1加密结果
+    :param d: tid or plateNo + salt
+    :return: 加密结果
+    '''
+    return hashlib.sha1(d.encode('utf-8')).hexdigest()
